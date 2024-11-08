@@ -5,68 +5,111 @@
     </div>
   </div>
 
-  <form class="mt-4">
+  <form class="mt-4" [formGroup]="reserveForm" >
     <!-- Datos de la Empresa -->
-    <div class="card mb-4">
+    <div class="card mb-4" formGroupName="companyData" >
       <div class="card-header bg-primary text-white">
         <h3 class="h5 mb-0">Datos de la Empresa</h3>
       </div>
       <div class="card-body">
         <div class="mb-3">
           <label class="form-label required">Nombre de la Empresa</label>
-          <input type="text" class="form-control" placeholder="Ingrese el nombre de la empresa">
+          <input type="text" class="form-control" formControlName="companyName" placeholder="Ingrese el nombre de la empresa">
+          @if (companyData.get('companyName')?.errors?.['required'] && companyData.get('companyName')?.touched) {
+            <div class="text-danger">El nombre de la empresa es requerido</div>
+          }
+          @if (companyData.get('companyName')?.errors?.['min'] && companyData.get('companyName')?.touched) {
+            <div class="text-danger">El nombre debe tener al menos 5 caracteres</div>
+          }
         </div>
 
         <div class="mb-3">
           <label class="form-label required">Email Corporativo</label>
           <input type="email" class="form-control" placeholder="ejemplo@empresa.com">
+          @if (companyData.get('email')?.errors?.['required'] && companyData.get('email')?.touched) {
+            <div class="text-danger">El email es requerido</div>
+          }
+          @if (companyData.get('email')?.errors?.['email'] && companyData.get('email')?.touched) {
+            <div class="text-danger">Ingrese un email válido</div>
+          }
         </div>
 
         <div class="mb-3">
           <label class="form-label required">Teléfono de Contacto</label>
           <input type="tel" class="form-control" placeholder="+54 11 1234-5678">
+          @if (companyData.get('phone')?.errors?.['required'] && companyData.get('phone')?.touched) {
+            <div class="text-danger">El teléfono es requerido</div>
+          }
         </div>
       </div>
     </div>
 
     <!-- Detalles del Evento -->
-    <div class="card mb-4">
+    <div class="card mb-4" formGroupName="eventData">
       <div class="card-header bg-primary text-white">
         <h3 class="h5 mb-0">Detalles del Evento</h3>
       </div>
       <div class="card-body">
         <div class="mb-3">
           <label class="form-label required">Lugar del Evento</label>
-          <select class="form-select">
+          <select class="form-select" formControlName="selectedVenueId">
             <option value="">Seleccione un lugar</option>
+            @for(venue of availableVenues; track venue.id) {
+              <option [value]="venue.id">{{venue.name}}</option>
+            }
           </select>
+          @if (eventData.get('selectedVenueId')?.errors?.['required'] && eventData.get('selectedVenueId')?.touched) {
+            <div class="text-danger">Debe seleccionar un lugar</div>
+          }
         </div>
 
         <div class="row">
           <div class="col-md-4">
             <div class="mb-3">
               <label class="form-label required">Fecha</label>
-              <input type="date" class="form-control">
+              <input type="date" class="form-control" formControlName="date">
+              @if (eventData.get('date')?.errors?.['required'] && eventData.get('date')?.touched) {
+                <div class="text-danger">La fecha es requerida</div>
+              }
             </div>
           </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label class="form-label required">Hora de Inicio</label>
-              <input type="time" class="form-control">
+              <input type="time" class="form-control" formControlName="startTime">
+              @if (eventData.get('startTime')?.errors?.['required'] && eventData.get('startTime')?.touched) {
+                <div class="text-danger">La hora de inicio es requerida</div>
+              }
             </div>
           </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label class="form-label required">Hora de Finalización</label>
-              <input type="time" class="form-control">
+              <input type="time" class="form-control" formControlName="endTime">
+              @if (eventData.get('endTime')?.errors?.['required'] && eventData.get('endTime')?.touched) {
+                <div class="text-danger">La hora de finalización es requerida</div>
+              }
             </div>
           </div>
         </div>
+
+        @if (eventData.errors?.['invalidEventTimeRange']) {
+          <div class="text-danger">La hora de finalización debe ser posterior a la hora de inicio</div>
+        }
+        
 
         <div class="mb-3">
           <label class="form-label required">Cantidad Total de Personas</label>
           <input type="number" class="form-control">
         </div>
+
+        @if(eventData.errors?.['venueNotAvailable']) {
+          <div class="col-12">
+            <div class="text-danger">
+              El lugar seleccionado no está disponible en la fecha elegida.
+            </div>
+          </div>
+        }
       </div>
     </div>
 
@@ -74,52 +117,89 @@
     <div class="card mb-4">
       <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h3 class="h5 mb-0">Servicios Adicionales</h3>
-        <button type="button" class="btn btn-light btn-sm">
+        <button type="button" class="btn btn-light btn-sm" (click)="addAditionalService()">
           + Agregar Servicio
         </button>
       </div>
-      <div class="card-body">
-        <div class="border rounded p-3 mb-3 position-relative">
-          <button type="button" class="btn-close position-absolute top-0 end-0 m-2"></button>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label required">Tipo de Servicio</label>
-                <select class="form-select">
-                  <option value="">Seleccione un servicio</option>
-                </select>
+      <div class="card-body" formArrayName="additionalServices">
+        @for (serviceForm of additionalServices.controls; track $index) {
+          <div [formGroupName]="$index" class="border rounded p-3 mb-3 position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-2"
+            (click)="additionalServices.removeAt($index)"></button>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label required">Tipo de Servicio</label>
+                  <select class="form-select" formControlName="selectedServiceTypeId">
+                    <option value="">Seleccione un servicio</option>
+                    @for (service of availableServiceTypes; track service.id) {
+                      <option [value]="service.id">{{service.name}}</option>
+                    }
+                  </select>
+                  @if (serviceForm.get('selectedServiceTypeId')?.errors?.['required'] && serviceForm.get('selectedServiceTypeId')?.touched) {
+                    <div class="text-danger">Debe seleccionar un tipo de servicio</div>
+                  }
+                </div>
+              </div>
+  
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label required">Cantidad de Personas</label>
+                  <input type="number" class="form-control" formControlName="servicePeopleAmount">
+                  @if (serviceForm.get('servicePeopleAmout')?.errors?.['required'] && serviceForm.get('servicePeopleAmout')?.touched) {
+                    <div class="text-danger">La cantidad de personas es requerida</div>
+                  }
+                  @if (serviceForm.get('servicePeopleAmout')?.errors?.['min'] && serviceForm.get('servicePeopleAmout')?.touched) {
+                    <div class="text-danger">Mínimo 10 personas por servicio</div>
+                  }
+                </div>
+              </div>
+            </div>
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label required">Hora de Inicio</label>
+                  <input type="time" class="form-control" formControlName="serviceStartTime">
+                  @if (serviceForm.get('serviceStartTime')?.errors?.['required'] && serviceForm.get('serviceStartTime')?.touched) {
+                    <div class="text-danger">La hora de inicio es requerida</div>
+                  }
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label required">Hora de Finalización</label>
+                  <input type="time" class="form-control" formControlName="serviceEndTime">
+                  @if (serviceForm.get('serviceEndTime')?.errors?.['required'] && serviceForm.get('serviceEndTime')?.touched) {
+                    <div class="text-danger">La hora de finalización es requerida</div>
+                  }
+                </div>
               </div>
             </div>
 
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label required">Cantidad de Personas</label>
-                <input type="number" class="form-control">
-              </div>
+            @if (serviceForm.errors?.['serviceStartsBeforeEvent']) {
+              <div class="text-danger">El servicio no puede comenzar antes del evento</div>
+            }
+            @if (serviceForm.errors?.['serviceEndsAfterEvent']) {
+              <div class="text-danger">El servicio no puede terminar después del evento</div>
+            }
+            @if (serviceForm.errors?.['invalidServiceTimeRange']) {
+              <div class="text-danger">La hora de finalización debe ser posterior a la hora de inicio</div>
+            }
+
+
+  
+            <div class="text-end">
+              <small class="text-muted">
+                Subtotal del servicio: {{serviceForm.get('serviceSubtotal')?.value | currency}}
+              </small>
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label required">Hora de Inicio</label>
-                <input type="time" class="form-control">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label required">Hora de Finalización</label>
-                <input type="time" class="form-control">
-              </div>
-            </div>
-          </div>
+        }
 
-          <div class="text-end">
-            <small class="text-muted">
-              Subtotal del servicio: $0.00
-            </small>
-          </div>
-        </div>
+
+        
       </div>
     </div>
 
