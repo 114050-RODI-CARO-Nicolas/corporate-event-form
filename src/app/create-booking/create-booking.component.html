@@ -25,7 +25,7 @@
 
         <div class="mb-3">
           <label class="form-label required">Email Corporativo</label>
-          <input type="email" class="form-control" placeholder="ejemplo@empresa.com">
+          <input type="email" class="form-control" placeholder="ejemplo@empresa.com" formControlName="email">
           @if (companyData.get('email')?.errors?.['required'] && companyData.get('email')?.touched) {
             <div class="text-danger">El email es requerido</div>
           }
@@ -36,7 +36,7 @@
 
         <div class="mb-3">
           <label class="form-label required">Teléfono de Contacto</label>
-          <input type="tel" class="form-control" placeholder="+54 11 1234-5678">
+          <input type="tel" class="form-control" placeholder="+54 11 1234-5678" formControlName="phone">
           @if (companyData.get('phone')?.errors?.['required'] && companyData.get('phone')?.touched) {
             <div class="text-danger">El teléfono es requerido</div>
           }
@@ -100,7 +100,7 @@
 
         <div class="mb-3">
           <label class="form-label required">Cantidad Total de Personas</label>
-          <input type="number" class="form-control">
+          <input type="number" class="form-control" formControlName="peopleAmount" >
         </div>
 
         @if(eventData.errors?.['venueNotAvailable']) {
@@ -130,13 +130,13 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label required">Tipo de Servicio</label>
-                  <select class="form-select" formControlName="selectedServiceTypeId">
+                  <select class="form-select" formControlName="serviceId">
                     <option value="">Seleccione un servicio</option>
                     @for (service of availableServiceTypes; track service.id) {
                       <option [value]="service.id">{{service.name}}</option>
                     }
                   </select>
-                  @if (serviceForm.get('selectedServiceTypeId')?.errors?.['required'] && serviceForm.get('selectedServiceTypeId')?.touched) {
+                  @if (serviceForm.get('serviceId')?.errors?.['required'] && serviceForm.get('serviceId')?.touched) {
                     <div class="text-danger">Debe seleccionar un tipo de servicio</div>
                   }
                 </div>
@@ -145,11 +145,11 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label required">Cantidad de Personas</label>
-                  <input type="number" class="form-control" formControlName="servicePeopleAmount">
-                  @if (serviceForm.get('servicePeopleAmout')?.errors?.['required'] && serviceForm.get('servicePeopleAmout')?.touched) {
+                  <input type="number" class="form-control" formControlName="quantity">
+                  @if (serviceForm.get('quantity')?.errors?.['required'] && serviceForm.get('quantity')?.touched) {
                     <div class="text-danger">La cantidad de personas es requerida</div>
                   }
-                  @if (serviceForm.get('servicePeopleAmout')?.errors?.['min'] && serviceForm.get('servicePeopleAmout')?.touched) {
+                  @if (serviceForm.get('quantity')?.errors?.['min'] && serviceForm.get('quantity')?.touched) {
                     <div class="text-danger">Mínimo 10 personas por servicio</div>
                   }
                 </div>
@@ -160,8 +160,8 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label required">Hora de Inicio</label>
-                  <input type="time" class="form-control" formControlName="serviceStartTime">
-                  @if (serviceForm.get('serviceStartTime')?.errors?.['required'] && serviceForm.get('serviceStartTime')?.touched) {
+                  <input type="time" class="form-control" formControlName="startTime">
+                  @if (serviceForm.get('startTime')?.errors?.['required'] && serviceForm.get('startTime')?.touched) {
                     <div class="text-danger">La hora de inicio es requerida</div>
                   }
                 </div>
@@ -169,8 +169,8 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label required">Hora de Finalización</label>
-                  <input type="time" class="form-control" formControlName="serviceEndTime">
-                  @if (serviceForm.get('serviceEndTime')?.errors?.['required'] && serviceForm.get('serviceEndTime')?.touched) {
+                  <input type="time" class="form-control" formControlName="endTime">
+                  @if (serviceForm.get('endTime')?.errors?.['required'] && serviceForm.get('endTime')?.touched) {
                     <div class="text-danger">La hora de finalización es requerida</div>
                   }
                 </div>
@@ -249,4 +249,3 @@
     </div>
   </form>
 </div>
-

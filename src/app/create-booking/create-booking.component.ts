@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Service, Venue } from '../interfaces';
-import { AbstractControl, AsyncValidatorFn, FormArray, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Booking, Service, Venue } from '../interfaces';
+import { AbstractControl, AsyncValidatorFn, FormArray, FormControl, FormGroup, NgForm, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { map, Observable, of } from 'rxjs';
 import { VenueAvailabilityService } from '../services/venue-availability.service';
 import { BookingService } from '../services/booking.service';
 import { VenueService } from '../services/venue.service';
 import { ServiceTypeService } from '../services/service-type.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-booking',
@@ -21,6 +22,8 @@ export class CreateBookingComponent implements OnInit {
   private readonly venueAvailabilityService = inject(VenueAvailabilityService);
   private readonly venueService = inject(VenueService);
   private readonly serviceTypeService = inject(ServiceTypeService);
+  private readonly router = inject(Router);
+
 
 
   loadAvailableVenues():void{
@@ -56,6 +59,7 @@ export class CreateBookingComponent implements OnInit {
   availableVenues: Venue[] = [];
   availableServiceTypes: Service[] = [];
 
+
   reserveForm: FormGroup = new FormGroup({
     companyData: new FormGroup({
       companyName: new FormControl('', [Validators.required, Validators.min(5)]),
@@ -69,21 +73,23 @@ export class CreateBookingComponent implements OnInit {
       startTime: new FormControl('', Validators.required),
       endTime: new FormControl('', Validators.required),
       peopleAmount: new FormControl(1, [Validators.required]),
-    }, {validators: this.eventTimeRangeValidator(), asyncValidators: this.venueAvailabilityValidator()}), 
+    }, {asyncValidators: this.venueAvailabilityValidator()}), 
  
     additionalServices: new FormArray([])
-  });
+  }); 
 
   addAditionalService() {
     const additionalServiceForm = new FormGroup({
-      selectedServiceTypeId : new FormControl('', [Validators.required]),
-      servicePeopleAmount: new FormControl(10, [Validators.required, Validators.min(10)]),
-      serviceStartTime: new FormControl('', Validators.required), //Aplicar validador de rango de hora valido
-      serviceEndTime: new FormControl('', Validators.required),
+      serviceId : new FormControl('', [Validators.required]),
+      quantity: new FormControl(10, [Validators.required, Validators.min(10)]),
+      startTime: new FormControl('', Validators.required), //Aplicar validador de rango de hora valido
+      endTime: new FormControl('', Validators.required),
       serviceSubtotal: new FormControl(0),
     },
     {validators: this.serviceTimeRangeValidator()}
+    
   )
+  this.additionalServices.push(additionalServiceForm)
   }
 
   get additionalServices(): FormArray{
@@ -96,6 +102,58 @@ export class CreateBookingComponent implements OnInit {
 
   get companyData(): FormGroup {
     return this.reserveForm.get('companyData') as FormGroup;
+  }
+
+
+
+  // Form submit function
+
+
+  onSubmitForm(){
+
+    console.log('reserveForm: ', this.reserveForm)
+
+    if(this.reserveForm.valid){
+      const reserveFormValue = this.reserveForm.value;
+
+      const booking : Booking = {
+        
+        bookingCode: this.generateRandomCode(),
+        companyName: reserveFormValue.companyData.companyName,
+        companyEmail: reserveFormValue.companyData.companyEmail,
+        contactPhone: reserveFormValue.companyData.contactPhone,
+        venueId:  reserveFormValue.eventData.selectedVenueId,
+        eventDate: reserveFormValue.eventData.date,
+        startTime: reserveFormValue.eventData.startTime,
+        endTime:  reserveFormValue.eventData.endTime,
+        totalPeople: reserveFormValue.eventData.peopleAmount,
+        services: reserveFormValue.additionalServices,
+        totalAmount: this.calculateTotalAmountForEvent(),
+        createdAt: new Date(this.getSystemDate())
+        
+      }
+      console.log('booking object created: ', booking)
+      this.bookingService.create(booking).subscribe({
+        next: () => {
+          this.router.navigate(['/bookings'])
+        }
+      })
+    }
+  }
+
+  getSystemDate(){
+    return Date.now()
+  }
+
+  calculateTotalAmountForEvent(){
+    return 10000;
+  }
+
+
+  generateRandomCode(){
+
+    return 'abcde';
+
   }
 
 
@@ -124,8 +182,8 @@ export class CreateBookingComponent implements OnInit {
   private serviceTimeRangeValidator(): ValidatorFn {
     return (group: AbstractControl) : ValidationErrors | null => {
       
-      const serviceStartTime = group.get('serviceStartTime')?.value;
-      const serviceEndTime = group.get('serviceEndTime')?.value;
+      const serviceStartTime = group.get('startTime')?.value;
+      const serviceEndTime = group.get('endTime')?.value;
     
       //Considerando que el servicio tiene que ocurrir dentro del evento principal
       const eventStartTime = this.eventData.get('startTime')?.value;

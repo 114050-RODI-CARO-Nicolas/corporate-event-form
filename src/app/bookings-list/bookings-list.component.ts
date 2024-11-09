@@ -1,5 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { BookingService } from '../services/booking.service';
+import { Booking } from '../interfaces';
 
 @Component({
   selector: 'app-bookings-list',
@@ -11,6 +13,17 @@ import { Component } from '@angular/core';
   standalone: true
 })
 export class BookingsListComponent  {
+
+  private readonly bookingService = inject(BookingService);
+
+  allBookings : Booking[] = [];
+
+
+  getBookings(){
+    
+  }
+
+
  
   getStatusBadgeClass(status?: string): string {
     switch (status) {

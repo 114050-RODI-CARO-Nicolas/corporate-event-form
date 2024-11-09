@@ -10,7 +10,7 @@ import { Venue } from '../interfaces';
 export class VenueService {
 
   private readonly httpClient = inject(HttpClient)
-  private readonly apiUrl = environment.apiBookings;
+  private readonly apiUrl = environment.apiVenues;
 
   getAllVenues(): Observable<Venue[]> {
     return this.httpClient.get<Venue[]>(this.apiUrl);

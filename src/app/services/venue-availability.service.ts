@@ -12,21 +12,24 @@ export class VenueAvailabilityService {
   private readonly httpClient = inject(HttpClient)
   private readonly apiUrl = environment.apiAvailability;
 
-  checkVenuesAvailabilityByDate(date: string): Observable<VenueAvailability[]> {
-    const params = new HttpParams()
-      .set('date', date)
 
-    return this.httpClient.get<VenueAvailability[]>(this.apiUrl, { params });
+  checkAllVenueAvailability(): Observable<VenueAvailability[]>{
+    return this.httpClient.get<VenueAvailability[]>(this.apiUrl);
   }
 
+
+
   checkVenueAvailability(venueId: string, date: string): Observable<boolean> {
-    return this.checkVenuesAvailabilityByDate(date).pipe(
+    return this.checkAllVenueAvailability().pipe(
       map((availabilities) => {
-        const availabilityForVenue = availabilities.find(avail => avail.venueId === venueId);
-        return availabilityForVenue ? availabilityForVenue.available : false;
+        const availabilityForVenue = availabilities.find(avail => avail.venueId === venueId && avail.date === date);
+        return availabilityForVenue ? availabilityForVenue.available : true; //Si no existe el registro que coincida se asume que el venue esta disponible
       })
     );
   }
+
+
+ 
 
 
 
