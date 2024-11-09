@@ -26,7 +26,7 @@
         "Aire acondicionado"
       ],
       "address": "Calle Comercial 456, Distrito Financiero"
-     },
+    },
     {
       "id": "v3",
       "name": "Hotel Executive Gardens",
@@ -273,6 +273,63 @@
       "totalAmount": 19125,
       "status": "pending",
       "createdAt": "2024-10-28T18:33:39.735Z"
+    },
+    {
+      "id": "a9b0",
+      "bookingCode": "abcde",
+      "companyName": "Nicolas",
+      "venueId": "v1",
+      "eventDate": "2024-04-13",
+      "startTime": "13:00",
+      "endTime": "21:00",
+      "totalPeople": 10,
+      "services": [],
+      "totalAmount": 10000,
+      "createdAt": "2024-11-09T04:25:10.806Z"
+    },
+    {
+      "id": "16fc",
+      "bookingCode": "abcde",
+      "companyName": "Nicolas",
+      "venueId": "v1",
+      "eventDate": "1998-04-13",
+      "startTime": "20:00",
+      "endTime": "23:30",
+      "totalPeople": 10,
+      "services": [
+        {
+          "serviceId": "s1",
+          "quantity": 10,
+          "startTime": "21:00",
+          "endTime": "22:00",
+          "serviceSubtotal": 0
+        }
+      ],
+      "totalAmount": 10000,
+      "createdAt": "2024-11-09T05:01:15.889Z"
+    },
+    {
+      "id": "f0bf",
+      "bookingCode": "abcde",
+      "companyName": "Nicolas SRL",
+      "companyEmail": "nicolasgeronimorodi@gmail.com",
+      "contactPhone": "5435175938",
+      "venueId": "v3",
+      "eventDate": "2024-12-24",
+      "startTime": "19:00",
+      "endTime": "23:30",
+      "totalPeople": 115,
+      "services": [
+        {
+          "serviceId": "s3",
+          "quantity": 13,
+          "startTime": "19:00",
+          "endTime": "19:01",
+          "serviceSubtotal": 10
+        }
+      ],
+      "totalAmount": 10000,
+      "createdAt": "2024-11-09T05:04:52.306Z"
     }
   ],
   "availability": [

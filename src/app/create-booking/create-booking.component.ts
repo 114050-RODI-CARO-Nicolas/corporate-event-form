@@ -25,6 +25,74 @@ export class CreateBookingComponent implements OnInit {
   private readonly router = inject(Router);
 
 
+  grandTotal : number = 0;
+  generalSubtotal: number = 0;
+
+  discountApplies : boolean = false;
+  discountPercentage: number = 0;
+
+  calculateGrandTotal(): void {
+
+    // calcular el total en base al pricePerHour del venue 
+    //sumar los additional services en base a su pricePerPerson
+    
+
+    let subtotal = 0;
+    let venueCost = 0;
+    let additionalServicesSubtotal = 0;
+
+    const selectedVenueId = this.reserveForm.get('eventData')?.get('selectedVenueId')?.value;
+    let eventHours = 0;
+
+    const eventStartTime = this.reserveForm.get('eventData')?.get('startTime')?.value;
+    const eventEndTime = this.reserveForm.get('eventData')?.get('endTime')?.value;
+
+
+    if(eventStartTime && eventEndTime){
+      const startDate = new Date(`2000-01-01T${eventStartTime}`)
+      const endDate = new Date(`2000-01-01T${eventEndTime}`)
+
+      const differenceInMiliseconds = endDate.getTime() - startDate.getTime();
+      eventHours = differenceInMiliseconds / (1000 * 60 * 60 );
+
+      if(selectedVenueId){
+        const selectedVenueObject = this.availableVenues.find(v => v.id === selectedVenueId );
+        if(selectedVenueObject){
+          const pricePerHour = selectedVenueObject.pricePerHour;
+          venueCost = pricePerHour * eventHours
+
+  
+        }
+      }
+    }
+
+    this.additionalServices.controls.forEach( control => {
+      const selectedServiceId = control.get('serviceId')?.value;
+      if(selectedServiceId){
+        const matchingService = this.availableServiceTypes.find(s=> s.id === selectedServiceId); 
+        if(matchingService){
+          const quantityValue = control.get('quantity')?.value;
+          if(quantityValue){
+            control.get('serviceSubtotal')?.patchValue(quantityValue * matchingService.pricePerPerson);
+            additionalServicesSubtotal += quantityValue * matchingService.pricePerPerson;
+          }
+        }
+      }
+    })
+
+
+
+    subtotal = venueCost + additionalServicesSubtotal;
+    this.generalSubtotal = subtotal;
+
+    const peopleAmount = this.eventData.get('peopleAmount')?.value;
+    if(peopleAmount){
+     this.discountApplies = peopleAmount > 100; 
+    this.grandTotal = this.discountApplies ? subtotal * 0.75 : subtotal;
+    }
+
+  }
+
 
   loadAvailableVenues():void{
     this.venueService.getAllVenues().subscribe({
@@ -47,8 +115,6 @@ export class CreateBookingComponent implements OnInit {
       }
     })
   }
-
-  
 
 
   ngOnInit(): void {
@@ -87,10 +153,23 @@ export class CreateBookingComponent implements OnInit {
       serviceSubtotal: new FormControl(0),
     },
     {validators: this.serviceTimeRangeValidator()}
-    
   )
+
+  additionalServiceForm.get('quantity')?.valueChanges.subscribe(()=>{
+    this.calculateGrandTotal();
+
+  })
+
   this.additionalServices.push(additionalServiceForm)
   }
+
+  removeAdditionalServiceForm(index: number){
+    this.additionalServices.removeAt(index);
+    this.calculateGrandTotal();
+  }
+
+
+
 
   get additionalServices(): FormArray{
     return this.reserveForm.get('additionalServices') as FormArray;
@@ -120,8 +199,8 @@ export class CreateBookingComponent implements OnInit {
         
         bookingCode: this.generateRandomCode(),
         companyName: reserveFormValue.companyData.companyName,
-        companyEmail: reserveFormValue.companyData.companyEmail,
-        contactPhone: reserveFormValue.companyData.contactPhone,
+        companyEmail: reserveFormValue.companyData.email,
+        contactPhone: reserveFormValue.companyData.phone,
         venueId:  reserveFormValue.eventData.selectedVenueId,
         eventDate: reserveFormValue.eventData.date,
         startTime: reserveFormValue.eventData.startTime,
@@ -180,14 +259,28 @@ export class CreateBookingComponent implements OnInit {
   }
 
   private serviceTimeRangeValidator(): ValidatorFn {
+
+    // Esta validacion tal vez es demasiada compleja con respecto a lo que pide el enunciado. 
+    //Probablemente solo con validar serviceStartTime contra serviceEndTime alcanzaba
+
+
     return (group: AbstractControl) : ValidationErrors | null => {
       
       const serviceStartTime = group.get('startTime')?.value;
       const serviceEndTime = group.get('endTime')?.value;
+
+      console.log('serviceStartTime: ', serviceStartTime);
+      console.log('serviceEndTime: ', serviceEndTime);
+
     
       //Considerando que el servicio tiene que ocurrir dentro del evento principal
       const eventStartTime = this.eventData.get('startTime')?.value;
-      const eventEndTime = this.eventData.get('startTime')?.value;
+      const eventEndTime = this.eventData.get('endTime')?.value;
+
+      console.log('eventStartTime: ', eventStartTime);
+      console.log('eventEndTime: ', eventEndTime);
+
+
 
       if (!serviceStartTime || !serviceEndTime || !eventStartTime || !eventEndTime) return null;
 
@@ -196,6 +289,9 @@ export class CreateBookingComponent implements OnInit {
       const eventStart = new Date(`2000-01-01T${eventStartTime}`);
       const eventEnd = new Date(`2000-01-01T${eventEndTime}`);
 
+
+
+
       // Servicio inicia antes del rango del evento
       if (serviceStart < eventStart) {
         return { serviceStartsBeforeEvent: true };
@@ -203,6 +299,7 @@ export class CreateBookingComponent implements OnInit {
       
       //Servicio termina despues del rango del evento
       if (serviceEnd > eventEnd) {
+        console.log('serviceEnd>eventEnd: valores -> serviceEnd: ', serviceEnd , " eventEnd: ", eventEnd)
         return { serviceEndsAfterEvent: true };
       }
 

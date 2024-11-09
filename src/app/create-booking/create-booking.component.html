@@ -125,7 +125,7 @@
         @for (serviceForm of additionalServices.controls; track $index) {
           <div [formGroupName]="$index" class="border rounded p-3 mb-3 position-relative">
             <button type="button" class="btn-close position-absolute top-0 end-0 m-2"
-            (click)="additionalServices.removeAt($index)"></button>
+            (click)="removeAdditionalServiceForm($index)"></button>
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-3">
@@ -214,7 +214,7 @@
             <h6>Subtotal:</h6>
           </div>
           <div class="col-auto">
-            <h6>$0.0</h6>
+            <h6>{{this.generalSubtotal}}</h6>
           </div>
         </div>
 
@@ -224,7 +224,7 @@
             <small>¡Descuento aplicado por grupo mayor a 100 personas!</small>
           </div>
           <div class="col-auto">
-            <h6>-$0.0</h6>
+            <h6>{{this.discountPercentage}}</h6>
           </div>
         </div>
 
@@ -235,7 +235,7 @@
             <h5 class="mb-0">Total Final:</h5>
           </div>
           <div class="col-auto">
-            <h5 class="mb-0">$0.0</h5>
+            <h5 class="mb-0">{{this.grandTotal}}</h5>
           </div>
         </div>
       </div>
