@@ -218,15 +218,20 @@
           </div>
         </div>
 
-        <div class="row mb-2 text-success">
-          <div class="col">
-            <h6>Descuento (15%):</h6>
-            <small>¡Descuento aplicado por grupo mayor a 100 personas!</small>
+        @if(this.discountApplies){
+          <div class="row mb-2 text-success">
+            <div class="col">
+              <h6>Descuento (15%):</h6>
+              <small>¡Descuento aplicado por grupo mayor a 100 personas!</small>
+            </div>
+            <div class="col-auto">
+              <h6>{{this.appliedDiscount}}</h6>
+            </div>
           </div>
-          <div class="col-auto">
-            <h6>{{this.discountPercentage}}</h6>
-          </div>
-        </div>
+
+        }
+
+   
 
         <hr>
 

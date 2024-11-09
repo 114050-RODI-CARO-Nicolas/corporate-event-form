@@ -29,7 +29,7 @@ export class CreateBookingComponent implements OnInit {
   generalSubtotal: number = 0;
 
   discountApplies : boolean = false;
-  discountPercentage: number = 0;
+  appliedDiscount: number = 0;
 
   calculateGrandTotal(): void {
 
@@ -88,7 +88,10 @@ export class CreateBookingComponent implements OnInit {
     const peopleAmount = this.eventData.get('peopleAmount')?.value;
     if(peopleAmount){
      this.discountApplies = peopleAmount > 100; 
-    this.grandTotal = this.discountApplies ? subtotal * 0.75 : subtotal;
+    this.grandTotal = this.discountApplies ? subtotal * 0.85 : subtotal;
+    if(this.discountApplies){
+      this.appliedDiscount = (15/100)*subtotal;
+    }
     }
 
   }
@@ -120,6 +123,22 @@ export class CreateBookingComponent implements OnInit {
   ngOnInit(): void {
     this.loadAvailableVenues();
     this.loadAvailableServiceTypes();
+    this.reserveForm.get('eventData')?.get('selectedVenueId')?.valueChanges.subscribe(()=>{
+      this.calculateGrandTotal();
+    });
+
+    this.reserveForm.get('eventData')?.get('startTime')?.valueChanges.subscribe(()=>{
+      this.calculateGrandTotal();
+    });
+
+    this.reserveForm.get('eventData')?.get('endTime')?.valueChanges.subscribe(()=>{
+      this.calculateGrandTotal();
+    })
+
+    this.reserveForm.get('eventData')?.get('peopleAmount')?.valueChanges.subscribe(()=>{
+      this.calculateGrandTotal();
+    })
+
   }
 
   availableVenues: Venue[] = [];
@@ -169,8 +188,6 @@ export class CreateBookingComponent implements OnInit {
   }
 
 
-
-
   get additionalServices(): FormArray{
     return this.reserveForm.get('additionalServices') as FormArray;
   }
@@ -182,6 +199,10 @@ export class CreateBookingComponent implements OnInit {
   get companyData(): FormGroup {
     return this.reserveForm.get('companyData') as FormGroup;
   }
+
+
+
+
 
 
 

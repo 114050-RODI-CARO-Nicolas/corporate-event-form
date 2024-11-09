@@ -330,6 +330,29 @@
       ],
       "totalAmount": 10000,
       "createdAt": "2024-11-09T05:04:52.306Z"
+    },
+    {
+      "id": "ee73",
+      "bookingCode": "abcde",
+      "companyName": "Mediatek SRL",
+      "companyEmail": "compras@mediatek.com.ar",
+      "contactPhone": "543517895",
+      "venueId": "v3",
+      "eventDate": "2024-12-10",
+      "startTime": "18:00",
+      "endTime": "23:50",
+      "totalPeople": 101,
+      "services": [
+        {
+          "serviceId": "s1",
+          "quantity": 12,
+          "startTime": "21:00",
+          "endTime": "23:00",
+          "serviceSubtotal": 540
+        }
+      ],
+      "totalAmount": 10000,
+      "createdAt": "2024-11-09T07:05:52.326Z"
     }
   ],
   "availability": [
