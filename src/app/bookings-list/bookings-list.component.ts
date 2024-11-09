@@ -1,7 +1,10 @@
-import { CurrencyPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
 import { BookingService } from '../services/booking.service';
 import { Booking } from '../interfaces';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+import { RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-bookings-list',
@@ -9,22 +12,54 @@ import { Booking } from '../interfaces';
   styles: [`
     .badge { text-transform: capitalize; }
   `],
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, DatePipe, CommonModule, ReactiveFormsModule, RouterLink, RouterModule],
   standalone: true
 })
-export class BookingsListComponent  {
+export class BookingsListComponent implements OnInit  {
+  
 
   private readonly bookingService = inject(BookingService);
 
+  searchTerm : FormControl = new FormControl('');
+
+
+
   allBookings : Booking[] = [];
+  filteredBookings : Booking[] = [];
+
+
+  ngOnInit(): void {
+    this.getBookings();
+    this.searchTerm.valueChanges.subscribe(data => {
+      if (this.searchTerm.value == null || this.searchTerm.value === ''){
+        this.filteredBookings = this.allBookings;
+      } else {
+
+        this.filteredBookings = this.allBookings.filter(booking => 
+          booking.companyName.toLowerCase().includes(this.searchTerm.value.toLowerCase())
+          ||
+          booking.bookingCode?.toLowerCase().includes(this.searchTerm.value.toLowerCase())
+        )
+      }
+    })
+    
+  
+  }
+
+
+
+
 
 
   getBookings(){
     this.bookingService.getBookings().subscribe({
       next: (data) =>{
         this.allBookings = data;
+        this.filteredBookings = this.allBookings;
       }
-    })
+    });
+
+
     
   }
 

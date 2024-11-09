@@ -145,6 +145,9 @@ export class CreateBookingComponent implements OnInit {
   availableServiceTypes: Service[] = [];
 
 
+  //TODO: Reescribir la estructura del formulario para que no este dividido en distintos form groups, lo que me va a obligar a reescribir las funciones validadores
+
+
   reserveForm: FormGroup = new FormGroup({
     companyData: new FormGroup({
       companyName: new FormControl('', [Validators.required, Validators.min(5)]),
@@ -228,7 +231,7 @@ export class CreateBookingComponent implements OnInit {
         endTime:  reserveFormValue.eventData.endTime,
         totalPeople: reserveFormValue.eventData.peopleAmount,
         services: reserveFormValue.additionalServices,
-        totalAmount: this.calculateTotalAmountForEvent(),
+        totalAmount: this.grandTotal,
         createdAt: new Date(this.getSystemDate())
         
       }
@@ -251,9 +254,13 @@ export class CreateBookingComponent implements OnInit {
 
 
   generateRandomCode(){
-
-    return 'abcde';
-
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let randomCode = '';
+    for (let i = 0; i < 6; i ++){
+      const randomIndex = Math.floor(Math.random() * characters.length );
+      randomCode += characters[randomIndex];
+    }
+    return randomCode;
   }
 
 
@@ -283,6 +290,7 @@ export class CreateBookingComponent implements OnInit {
 
     // Esta validacion tal vez es demasiada compleja con respecto a lo que pide el enunciado. 
     //Probablemente solo con validar serviceStartTime contra serviceEndTime alcanzaba
+    //TODO: Reescribir con la estructura actual de group con groups, y luego reescribir con estructura de un group con muchos controls
 
 
     return (group: AbstractControl) : ValidationErrors | null => {
@@ -338,6 +346,9 @@ export class CreateBookingComponent implements OnInit {
   // Validador asincrono de disponibilidad del venu en cierta fecha
 
   private venueAvailabilityValidator(): AsyncValidatorFn{
+
+    //TODO: Validar y reescribir 
+    //TODO: Una vez que se refactorice el form group a form group con controles planos, volver a reescribir
     return (group: AbstractControl) : Observable <ValidationErrors | null> =>{
       const venueId = group.get('selectedVenueId')?.value;
       const date = group.get('date')?.value;

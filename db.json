@@ -353,6 +353,66 @@
       ],
       "totalAmount": 10000,
       "createdAt": "2024-11-09T07:05:52.326Z"
+    },
+    {
+      "id": "df19",
+      "bookingCode": "u1onZI",
+      "companyName": "Megacorp",
+      "companyEmail": "publicrelations@megacorp.com",
+      "contactPhone": "35175968",
+      "venueId": "v1",
+      "eventDate": "1998-04-13",
+      "startTime": "19:00",
+      "endTime": "23:20",
+      "totalPeople": 101,
+      "services": [
+        {
+          "serviceId": "s5",
+          "quantity": 100,
+          "startTime": "19:30",
+          "endTime": "20:30",
+          "serviceSubtotal": 500
+        },
+        {
+          "serviceId": "s1",
+          "quantity": 80,
+          "startTime": "20:00",
+          "endTime": "21:30",
+          "serviceSubtotal": 3600
+        }
+      ],
+      "totalAmount": 10000,
+      "createdAt": "2024-11-09T23:18:27.988Z"
+    },
+    {
+      "id": "3e95",
+      "bookingCode": "R6Rog5",
+      "companyName": "Omaha Consulting",
+      "companyEmail": "pr@omahaconsulting.co",
+      "contactPhone": "54687921",
+      "venueId": "v2",
+      "eventDate": "2024-11-12",
+      "startTime": "10:00",
+      "endTime": "13:00",
+      "totalPeople": 103,
+      "services": [
+        {
+          "serviceId": "s1",
+          "quantity": 100,
+          "startTime": "12:00",
+          "endTime": "13:00",
+          "serviceSubtotal": 4500
+        },
+        {
+          "serviceId": "s2",
+          "quantity": 100,
+          "startTime": "10:30",
+          "endTime": "11:30",
+          "serviceSubtotal": 1500
+        }
+      ],
+      "totalAmount": 5737.5,
+      "createdAt": "2024-11-09T23:23:39.291Z"
     }
   ],
   "availability": [
