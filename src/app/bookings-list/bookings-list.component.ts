@@ -20,6 +20,11 @@ export class BookingsListComponent  {
 
 
   getBookings(){
+    this.bookingService.getBookings().subscribe({
+      next: (data) =>{
+        this.allBookings = data;
+      }
+    })
     
   }
 
