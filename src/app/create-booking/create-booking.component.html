@@ -5,7 +5,7 @@
     </div>
   </div>
 
-  <form class="mt-4" [formGroup]="reserveForm" >
+  <form class="mt-4" [formGroup]="reserveForm" (ngSubmit)="onSubmitForm()" >
     <!-- Datos de la Empresa -->
     <div class="card mb-4" formGroupName="companyData" >
       <div class="card-header bg-primary text-white">
